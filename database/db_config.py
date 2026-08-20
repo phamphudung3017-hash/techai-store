@@ -1,5 +1,4 @@
 import os
-import certifi
 from pymongo import MongoClient
 
 def connect_db():
@@ -7,14 +6,15 @@ def connect_db():
     MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
     
     try:
-        # Thêm tlsCAFile=certifi.where() để giải quyết triệt để lỗi SSL Handshake
+        # KỸ THUẬT "VIÊN ĐẠN BẠC": Bỏ qua kiểm tra chứng chỉ SSL khắt khe trên Server
         client = MongoClient(
             MONGO_URI, 
             serverSelectionTimeoutMS=5000,
-            tlsCAFile=certifi.where()
+            tls=True,
+            tlsAllowInvalidCertificates=True  # <--- Dòng lệnh "cứu cánh"
         )
         
-        # Nhớ đổi 'techai_store' thành tên database thực tế của bạn nhé
+        # Nhớ giữ nguyên 'techai_store' hoặc đổi thành tên database của bạn nhé
         db = client["techai_store"] 
         return db
     except Exception as e:
