@@ -1,31 +1,17 @@
 import os
-from dotenv import load_dotenv
 from pymongo import MongoClient
 
-# Tải các biến môi trường từ file .env
-load_dotenv()
-
-# Lấy chuỗi kết nối
-MONGO_URI = os.getenv("MONGO_URI")
-
 def connect_db():
+    # Ưu tiên lấy biến môi trường từ Render, nếu không có thì mặc định lấy localhost (khi chạy ở máy nhà)
+    MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
+    
     try:
-        # Kết nối đến MongoDB
-        client = MongoClient(MONGO_URI)
+        # serverSelectionTimeoutMS=5000 giúp hệ thống báo lỗi nhanh hơn nếu rớt mạng (5 giây thay vì 30 giây)
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
         
-        # Ping thử để kiểm tra kết nối
-        client.admin.command('ping')
-        print("🎉 Chúc mừng! Bạn đã kết nối thành công tới MongoDB Atlas!")
-        
-        # Trỏ tới database và bảng của đồ án
-        db = client["ecommerce_db"]
+        # Tạo/Kết nối vào database có tên là 'techai_store'
+        db = client["ecommerce_db"] 
         return db
-        
     except Exception as e:
-        print("❌ Kết nối thất bại. Lỗi chi tiết:")
-        print(e)
+        print(f"❌ Lỗi kết nối MongoDB: {e}")
         return None
-
-# Chạy thử hàm kết nối
-if __name__ == "__main__":
-    connect_db()
