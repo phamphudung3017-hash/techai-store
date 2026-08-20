@@ -15,7 +15,7 @@ def connect_db():
         )
         
         # Đảm bảo tên database đúng với tên bạn đang dùng
-        db = client["techai_store"] 
+        db = client["ecommerce_db"] 
         return db
     except Exception as e:
         print(f"❌ Lỗi kết nối MongoDB: {e}")
