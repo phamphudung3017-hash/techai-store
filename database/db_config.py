@@ -1,16 +1,21 @@
 import os
+import certifi
 from pymongo import MongoClient
 
 def connect_db():
-    # Ưu tiên lấy biến môi trường từ Render, nếu không có thì mặc định lấy localhost (khi chạy ở máy nhà)
+    # Lấy biến môi trường từ Render, mặc định localhost nếu chạy ở máy nhà
     MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
     
     try:
-        # serverSelectionTimeoutMS=5000 giúp hệ thống báo lỗi nhanh hơn nếu rớt mạng (5 giây thay vì 30 giây)
-        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        # Thêm tlsCAFile=certifi.where() để giải quyết triệt để lỗi SSL Handshake
+        client = MongoClient(
+            MONGO_URI, 
+            serverSelectionTimeoutMS=5000,
+            tlsCAFile=certifi.where()
+        )
         
-        # Tạo/Kết nối vào database có tên là 'techai_store'
-        db = client["ecommerce_db"] 
+        # Nhớ đổi 'techai_store' thành tên database thực tế của bạn nhé
+        db = client["techai_store"] 
         return db
     except Exception as e:
         print(f"❌ Lỗi kết nối MongoDB: {e}")
