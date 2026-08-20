@@ -291,12 +291,12 @@
                     <div class="row align-items-center">
                         <div class="col-md-7">
                             <span class="badge bg-danger mb-2 px-3 py-2 fw-semibold">🔥 SẢN PHẨM HOT NHẤT</span>
-                            <h2 class="fw-bold mb-2">ASUS ROG Strix G16</h2>
+                            <h2 class="fw-bold mb-2">Laptop ASUS ZenBook 14 UX3405CA-ST648W</h2>
                             <p class="text-gray-300 mb-3 fs-6">Đỉnh cao Laptop Gaming AI Gen 13 • RTX 4060 8GB • Màn hình 16" FHD+ 165Hz mượt mà.</p>
-                            <a href="/product/SP001" class="btn btn-brand-red btn-lg px-4 py-2 fs-6">MUA NGAY</a>
+                            <a href="/product/SP0010" class="btn btn-brand-red btn-lg px-4 py-2 fs-6">MUA NGAY</a>
                         </div>
                         <div class="col-md-5 text-center mt-3 mt-md-0">
-                            <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500" class="img-fluid rounded-3 shadow" alt="Laptop Gaming" style="max-height: 180px; object-fit: cover;">
+                            <img src="http://127.0.0.1:5000/static/uploads/SP0010_group_894_2_.jpg" class="img-fluid rounded-3 shadow" alt="Laptop Gaming" style="max-height: 180px; object-fit: cover;">
                         </div>
                     </div>
                 </div>
@@ -307,9 +307,9 @@
                     <form method="GET" action="{{ base_url }}" class="d-flex align-items-center gap-2">
                         <label class="text-muted small fw-semibold text-nowrap">Sắp xếp theo:</label>
                         <select name="sort" onchange="this.form.submit()" class="form-select form-select-sm border-danger rounded-pill px-3 shadow-sm w-auto" style="cursor: pointer;">
-                            <option value="">🌟 Mới nhất (Mặc định)</option>
-                            <option value="asc" {% if current_sort == 'asc' %}selected{% endif %}>📈 Giá: Thấp đến Cao</option>
-                            <option value="desc" {% if current_sort == 'desc' %}selected{% endif %}>📉 Giá: Cao xuống Thấp</option>
+                            <option value=""> Mới nhất (Mặc định)</option>
+                            <option value="asc" {% if current_sort == 'asc' %}selected{% endif %}> Giá: Thấp đến Cao</option>
+                            <option value="desc" {% if current_sort == 'desc' %}selected{% endif %}> Giá: Cao xuống Thấp</option>
                         </select>
                         <input type="hidden" name="page" value="1"> 
                     </form>
