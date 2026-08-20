@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechAI Admin - Tổng Quan & Thống Kê</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --brand-red: #e60023;
+            --brand-red-hover: #c8001e;
+            --bg-light: #f4f6f9;
+        }
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', system-ui, sans-serif; }
+        
+        /* Layout Sidebar */
+        .admin-sidebar {
+            background: #ffffff;
+            min-height: calc(100vh - 70px);
+            border-right: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .admin-sidebar .nav-link {
+            color: #4b5563;
+            font-weight: 600;
+            padding: 14px 20px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+        .admin-sidebar .nav-link:hover, .admin-sidebar .nav-link.active {
+            background-color: #fff0f2;
+            color: var(--brand-red);
+        }
+
+        /* Card Thống kê */
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #f3f4f6;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white border-bottom py-2 shadow-sm sticky-top">
+        <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+            <a href="/admin" class="navbar-brand fs-4 fw-bold text-dark">
+                🚀 TechAI <span style="color: var(--brand-red);">Admin Panel</span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <a href="/admin/sync_ai" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold"> Đồng Bộ AI</a>
+                <a href="/" class="btn btn-light border btn-sm rounded-pill px-3 fw-semibold">🏠 Xem Website</a>
+                <span class="badge bg-danger px-3 py-2 rounded-pill">Admin: {{ session['username'] }}</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid px-4 my-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="row g-4">
+            <div class="col-md-3 col-lg-2">
+                <div class="admin-sidebar p-3">
+                    <small class="text-muted fw-bold d-block mb-3 px-2">QUẢN TRỊ HỆ THỐNG</small>
+                    <div class="nav flex-column nav-pills">
+                        <a href="/admin" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}"> Tổng Quan & Thống Kê</a>
+                        <a href="/admin/products" class="nav-link {% if active_page == 'products' %}active{% endif %}"> Quản Lý Kho Sản Phẩm</a>
+                        <a href="/admin/orders" class="nav-link {% if active_page == 'orders' %}active{% endif %}"> Quản Lý Đơn Hàng</a>
+                        <a href="/admin/brands" class="nav-link {% if active_page == 'brands' %}active{% endif %}"> Quản Lý Thương Hiệu</a>
+                        <a href="/admin/users" class="nav-link {% if active_page == 'users' %}active{% endif %}"> Quản Lý Tài Khoản</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9 col-lg-10">
+                <h4 class="fw-bold mb-4 text-dark"> Bảng Điều Khiển Tổng Quan</h4>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-muted fw-bold d-block">TỔNG SẢN PHẨM</small>
+                                <h3 class="fw-bold m-0 text-dark mt-1">{{ stats['total_products'] }}</h3>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-muted fw-bold d-block">TỔNG ĐƠN HÀNG</small>
+                                <h3 class="fw-bold m-0 text-dark mt-1">{{ stats['total_orders'] }}</h3>
+                            </div>
+                        
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-muted fw-bold d-block">ĐƠN CHỜ DUYỆT</small>
+                                <h3 class="fw-bold m-0 text-warning mt-1">{{ stats['pending_orders'] }}</h3>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-muted fw-bold d-block">TỔNG DOANH THU</small>
+                                <h3 class="fw-bold m-0 text-danger mt-1">{{ "{:,.0f}".format(stats['total_revenue']) }} đ</h3>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
+                            <h6 class="fw-bold text-dark mb-3">📊 Biểu Đồ Doanh Thu Theo Tuần (VNĐ)</h6>
+                            <canvas id="revenueChart" 
+                                    style="max-height: 320px;"
+                                    data-labels='{{ chart_labels | tojson | safe }}'
+                                    data-revenue='{{ chart_revenue | tojson | safe }}'></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm rounded-3 p-4 bg-white h-100">
+                            <h6 class="fw-bold text-dark mb-3">🎯 Tỷ Lệ Đơn Hàng</h6>
+                            <canvas id="orderPieChart" style="max-height: 250px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
+                            <h6 class="fw-bold text-dark mb-3">📊 Biểu Đồ Doanh Thu Theo Tuần (VNĐ)</h6>
+                            <canvas id="revenueChart" 
+                                    style="max-height: 320px;"
+                                    data-labels='{{ chart_labels | tojson | safe }}'
+                                    data-revenue='{{ chart_revenue | tojson | safe }}'></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm rounded-3 p-4 bg-white h-100">
+                            <h6 class="fw-bold text-dark mb-3">🎯 Tỷ Lệ Đơn Hàng</h6>
+                            <canvas id="orderPieChart" 
+                                    style="max-height: 250px;"
+                                    data-pending="{{ stats['pending_orders'] if stats else 0 }}"
+                                    data-completed="{{ stats['completed_orders'] if stats else 0 }}"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       // 1. Biểu đồ cột Doanh Thu
+        const canvasRevenue = document.getElementById('revenueChart');
+        const ctxRevenue = canvasRevenue.getContext('2d');
+        
+        // Parse dữ liệu từ Python truyền sang HTML
+        const labelsData = JSON.parse(canvasRevenue.getAttribute('data-labels') || '[]');
+        const revenueData = JSON.parse(canvasRevenue.getAttribute('data-revenue') || '[]');
+
+        new Chart(ctxRevenue, {
+            type: 'bar',
+            data: {
+                labels: labelsData,
+                datasets: [{
+                    label: 'Doanh Thu (VNĐ)',
+                    data: revenueData,
+                    backgroundColor: '#e60023',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+        // 2. Biểu đồ Tròn Trạng Thái Đơn Hàng
+        const canvasPie = document.getElementById('orderPieChart');
+        const ctxPie = canvasPie.getContext('2d');
+        
+        const pendingData = parseInt(canvasPie.getAttribute('data-pending') || 0);
+        const completedData = parseInt(canvasPie.getAttribute('data-completed') || 0);
+
+        new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: ['Chờ duyệt', 'Đã hoàn thành'],
+                datasets: [{
+                    data: [pendingData, completedData],
+                    backgroundColor: ['#ffc107', '#10b981']
+                }]
+            },
+            options: { responsive: true }
+        });
+    
+    </script>
+</body>
+</html>

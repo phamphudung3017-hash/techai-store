@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết sản phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand font-weight-bold" href="/">🚀 TechAI Store</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if product %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+              <li class="breadcrumb-item"><a href="/category/{{ product['danh_mục'] }}">{{ product['danh_mục'] }}</a></li>
+              <li class="breadcrumb-item active">{{ product['tên_sản_phẩm'] }}</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm p-4">
+            <div class="row">
+                <div class="col-md-5">
+                    <img src="{{ product['hình_ảnh'] }}" class="img-fluid rounded" alt="Product Image">
+                </div>
+                <div class="col-md-7">
+                    <h2 class="fw-bold">{{ product['tên_sản_phẩm'] }}</h2>
+                    <p class="text-muted">Thương hiệu: <strong>{{ product['thương_hiệu'] }}</strong> | Mã SP: {{ product['id_sp'] }}</p>
+                    <h3 class="text-danger fw-bold my-3">{{ "{:,.0f}".format(product['giá']) }} VNĐ</h3>
+                    
+                    <h5 class="mt-4">Mô tả sản phẩm</h5>
+                    <p>{{ product['mô_tả'] }}</p>
+
+                    <h5 class="mt-4">Thông số kỹ thuật</h5>
+                    <div class="p-3 bg-light border rounded">
+                        <ul class="mb-0">
+                            {% for spec in product['thông_số'].split('|') %}
+                                <li class="mb-1">{{ spec }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <button class="btn btn-danger btn-lg mt-4 w-100" 
+                            data-id="{{ product['id_sp'] }}"
+                            data-name="{{ product['tên_sản_phẩm'] }}"
+                            data-price="{{ product['giá'] }}"
+                            data-image="{{ product['hình_ảnh'] }}"
+                            onclick="addToCart(this)">
+                        🛒 THÊM VÀO GIỎ HÀNG
+                    </button>
+                    <a href="/cart" class="btn btn-outline-secondary btn-lg mt-2 w-100">Đến Giỏ hàng ngay</a>
+                    <hr class="my-5">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4 class="mb-4">⭐ Đánh giá & Bình luận</h4>
+                    
+                    {% if reviews %}
+                    <div class="mb-4">
+                        <h5 class="fw-bold">Đánh giá trung bình: <span class="text-warning">{{ avg_rating }} / 5 ⭐</span> <span class="text-muted fs-6">({{ reviews|length }} đánh giá)</span></h5>
+                    </div>
+                    {% endif %}
+
+                    {% if session['username'] %}
+                    <div class="card bg-light mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <form action="/add_review/{{ product['id_sp'] }}" method="POST">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Cho điểm sản phẩm (1-5 sao):</label>
+                                    <select name="rating" class="form-select w-auto" required>
+                                        <option value="5">⭐⭐⭐⭐⭐ (5) Tuyệt vời</option>
+                                        <option value="4">⭐⭐⭐⭐ (4) Tốt</option>
+                                        <option value="3">⭐⭐⭐ (3) Bình thường</option>
+                                        <option value="2">⭐⭐ (2) Tạm được</option>
+                                        <option value="1">⭐ (1) Kém</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Bình luận của bạn:</label>
+                                    <textarea name="comment" class="form-control" rows="3" required placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary fw-bold">📤 Gửi đánh giá</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        Vui lòng <a href="/login" class="fw-bold">Đăng nhập</a> để để lại bình luận và đánh giá của bạn nhé!
+                    </div>
+                    {% endif %}
+
+                    <div class="list-group">
+                        {% for review in reviews %}
+                        <div class="list-group-item flex-column align-items-start mb-3 border rounded shadow-sm">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold text-primary">👤 {{ review['tài_khoản'] }}</h6>
+                                <small class="text-muted">{{ review['ngày_đăng'] }}</small>
+                            </div>
+                            <p class="mb-1 text-warning fs-5">
+                                {% for i in range(review['đánh_giá']) %}⭐{% endfor %}
+                            </p>
+                            <p class="mb-0 mt-2">{{ review['bình_luận'] }}</p>
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center my-4 fst-italic">Chưa có đánh giá nào cho sản phẩm này. Hãy là người đầu tiên đánh giá!</p>
+                        {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <h2 class="text-center text-danger mt-5">Sản phẩm không tồn tại!</h2>
+        {% endif %}
+        {% if related_products %}
+            <hr class="my-5">
+            <div class="row mt-4 mb-5">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold m-0 text-dark">🔥 Sản Phẩm Cùng Danh Mục Bạn Có Thể Thích</h4>
+                        <span class="badge bg-danger rounded-pill px-3 py-2">Gợi ý dành cho bạn</span>
+                    </div>
+
+                    <div class="row g-3">
+                        {% for rel_p in related_products %}
+                        <div class="col-md-3 col-6">
+                            <div class="card h-100 border shadow-sm product-card rounded-3 overflow-hidden">
+                                <img src="{{ rel_p['hình_ảnh'] }}" class="card-img-top p-3" alt="{{ rel_p['tên_sản_phẩm'] }}" style="height: 160px; object-fit: contain;">
+                                <div class="card-body d-flex flex-column p-3">
+                                    <span class="badge bg-light text-secondary border w-auto align-self-start mb-1" style="font-size: 0.7rem;">{{ rel_p['danh_mục'] }}</span>
+                                    <h6 class="card-title fw-bold text-dark text-truncate mb-2" title="{{ rel_p['tên_sản_phẩm'] }}">{{ rel_p['tên_sản_phẩm'] }}</h6>
+                                    <div class="mt-auto">
+                                        <div class="fw-bold text-danger fs-6 mb-2">{{ "{:,.0f}".format(rel_p['giá']) }} đ</div>
+                                        <a href="/product/{{ rel_p['id_sp'] }}" class="btn btn-outline-danger btn-sm w-100 rounded-pill fw-semibold">Xem ngay</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+    </div>
+
+    <script>
+        function addToCart(buttonElement) {
+            // Bóc tách dữ liệu an toàn từ các thuộc tính data- của nút bấm
+            var id = buttonElement.getAttribute('data-id');
+            var name = buttonElement.getAttribute('data-name');
+            // Chuyển giá tiền từ chuỗi văn bản thành số nguyên
+            var price = parseInt(buttonElement.getAttribute('data-price')); 
+            var image = buttonElement.getAttribute('data-image');
+
+            fetch('/add_to_cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, name: name, price: price, image: image })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    alert('✅ Đã thêm "' + name + '" vào giỏ hàng! Hiện có ' + data.cart_count + ' sản phẩm trong giỏ.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

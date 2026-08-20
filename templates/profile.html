@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Cá Nhân & Lịch Sử Đơn Hàng - TechAI Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand-red: #e60023;
+            --bg-light: #f4f6f9;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #212529;
+        }
+
+        /* Styles cho Stepper Tiến trình đơn hàng */
+        .stepper-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .stepper-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .stepper-item::before {
+            position: absolute;
+            content: "";
+            border-bottom: 3px solid #e5e7eb;
+            width: 100%;
+            top: 20px;
+            left: -50%;
+            z-index: 1;
+        }
+
+        .stepper-item:first-child::before {
+            content: none;
+        }
+
+        .stepper-item .step-counter {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        /* Đã hoàn thành bước */
+        .stepper-item.completed .step-counter {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .stepper-item.completed::before {
+            border-color: #10b981;
+        }
+
+        /* Bước hiện tại (Active) */
+        .stepper-item.active .step-counter {
+            background-color: var(--brand-red);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(230, 0, 35, 0.2);
+        }
+
+        .stepper-item.active::before {
+            border-color: #10b981;
+        }
+
+        .step-name {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white border-bottom py-2 shadow-sm mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand fs-3 fw-bold text-dark d-flex align-items-center" href="/">
+                <span class="me-2 fs-2">🚀</span>TechAI <span style="color: var(--brand-red);" class="ms-1">Store</span>
+            </a>
+            <a href="/" class="btn btn-outline-secondary rounded-pill btn-sm px-3 fw-semibold">🏠 Quay lại Trang chủ</a>
+        </div>
+    </header>
+
+    <div class="container mb-5" style="max-width: 900px;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="card border-0 shadow-sm p-4 mb-5 rounded-3 bg-white">
+            <div class="row align-items-center">
+                <div class="col-md-4 border-end-md mb-4 mb-md-0 text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3 mb-2">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-3 fs-2">👤</div>
+                        <div>
+                            <h4 class="fw-bold mb-0 text-dark">{{ session['username'] }}</h4>
+                            <span class="badge bg-danger rounded-pill px-2 mt-1">{{ session.get('role', 'user') }}</span>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2">Cập nhật thông tin giao hàng mặc định để thanh toán nhanh chóng hơn.</p>
+                </div>
+                
+                <div class="col-md-8 ps-md-4">
+                    <form action="/profile" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small text-muted">Họ và Tên</label>
+                                <input type="text" name="fullname" class="form-control bg-light" value="{{ user_info.get('fullname', '') }}" placeholder="Nhập họ tên...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small text-muted">Số điện thoại</label>
+                                <input type="tel" name="phone" class="form-control bg-light" value="{{ user_info.get('phone', '') }}" placeholder="Nhập số điện thoại...">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold small text-muted">Địa chỉ nhận hàng</label>
+                                <input type="text" name="address" class="form-control bg-light" value="{{ user_info.get('address', '') }}" placeholder="Nhập địa chỉ đầy đủ...">
+                            </div>
+                            <div class="col-12 text-end mt-3">
+                                <button type="submit" class="btn btn-dark rounded-pill px-4 fw-bold">💾 Lưu Thông Tin</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="fw-bold mb-3 text-dark">📦 Lịch Sử Đơn Hàng Của Bạn</h4>
+
+        {% if orders|length == 0 %}
+            <div class="alert alert-light text-center py-5 border rounded-3 shadow-sm">
+                <div class="fs-1 mb-2">🛒</div>
+                <h5>Bạn chưa có đơn hàng nào!</h5>
+                <p class="text-muted small">Hãy khám phá các sản phẩm công nghệ tuyệt vời tại cửa hàng nhé.</p>
+                <a href="/" class="btn btn-danger rounded-pill px-4 fw-semibold mt-2" style="background-color: var(--brand-red);">Mua sắm ngay</a>
+            </div>
+        {% else %}
+            {% for order in orders %}
+            <div class="card border-0 shadow-sm mb-4 rounded-3 overflow-hidden bg-white">
+                <div class="card-header bg-light border-bottom p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <span class="fw-bold text-dark me-2">Mã đơn: <span class="text-danger">{{ order['id_đơn_hàng'] }}</span></span>
+                        <small class="text-muted">| Ngày đặt: {{ order['ngày_đặt'] }}</small>
+                    </div>
+                    <div>
+                        <span class="badge bg-white text-dark border px-3 py-2 rounded-pill shadow-sm">
+                            💳 {{ order.get('phương_thức_thanh_toán', 'COD') }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    {% if order['trạng_thái'] == 'Đã hủy' %}
+                        <div class="alert alert-danger text-center fw-bold rounded-3 m-0 mb-3">
+                            ❌ Đơn hàng này đã bị hủy.
+                        </div>
+                    {% else %}
+                        <div class="stepper-wrapper">
+                            <div class="stepper-item {% if order['trạng_thái'] in ['Chờ duyệt', 'Đang giao hàng', 'Đã hoàn thành'] %}{% if order['trạng_thái'] == 'Chờ duyệt' %}active{% else %}completed{% endif %}{% endif %}">
+                                <div class="step-counter">
+                                    {% if order['trạng_thái'] in ['Đang giao hàng', 'Đã hoàn thành'] %}✓{% else %}1{% endif %}
+                                </div>
+                                <div class="step-name">📝 Chờ duyệt</div>
+                            </div>
+
+                            <div class="stepper-item {% if order['trạng_thái'] in ['Đang giao hàng', 'Đã hoàn thành'] %}{% if order['trạng_thái'] == 'Đang giao hàng' %}active{% else %}completed{% endif %}{% endif %}">
+                                <div class="step-counter">
+                                    {% if order['trạng_thái'] == 'Đã hoàn thành' %}✓{% else %}2{% endif %}
+                                </div>
+                                <div class="step-name">🚚 Đang giao hàng</div>
+                            </div>
+
+                            <div class="stepper-item {% if order['trạng_thái'] == 'Đã hoàn thành' %}completed active{% endif %}">
+                                <div class="step-counter">3</div>
+                                <div class="step-name">✅ Đã hoàn thành</div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <hr class="my-4">
+
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-7">
+                            <h6 class="fw-bold mb-2">Sản phẩm đã chọn:</h6>
+                            <ul class="list-unstyled mb-3">
+                                {% for item in order['sản_phẩm'] %}
+                                    <li class="d-flex align-items-center gap-2 mb-2">
+                                        {% if item.get('image') %}
+                                            <img src="{{ item['image'] }}" width="40" height="40" class="rounded border object-fit-cover">
+                                        {% endif %}
+                                        <div class="lh-sm">
+                                            <div class="fw-semibold text-dark fs-6">{{ item['name'] }}</div>
+                                            <small class="text-danger fw-bold">{{ "{:,.0f}".format(item['price']) }} đ</small>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="p-3 bg-light rounded-3 small text-secondary border">
+                                📍 <strong>Giao đến:</strong> {{ order['khách_hàng'] }} ({{ order['số_điện_thoại'] }})<br>
+                                🏢 <strong>Địa chỉ:</strong> {{ order['địa_chỉ'] }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-5 text-md-end border-start-md pt-3 pt-md-0">
+                            <span class="text-muted d-block small">Tổng thanh toán:</span>
+                            <h4 class="text-danger fw-bold my-1">{{ "{:,.0f}".format(order['tổng_tiền']) }} VNĐ</h4>
+                            <small class="text-success fw-semibold">Đã bao gồm VAT & Phí vận chuyển</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

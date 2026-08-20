@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán Đơn Hàng - TechAI Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --brand-red: #e60023; --bg-light: #f4f6f9; }
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', system-ui, sans-serif; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white border-bottom py-2 shadow-sm mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand fs-3 fw-bold text-dark d-flex align-items-center" href="/">
+                <span class="me-2 fs-2">🚀</span>TechAI <span style="color: var(--brand-red);" class="ms-1">Store</span>
+            </a>
+            <a href="/cart" class="btn btn-outline-secondary rounded-pill btn-sm px-3">🛒 Giỏ hàng</a>
+        </div>
+    </header>
+
+    <div class="container mb-5" style="max-width: 950px;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <h3 class="fw-bold mb-4 text-dark"> Chi Tiết Thanh Toán</h3>
+        
+        <div class="row g-4">
+            <div class="col-md-7">
+                <div class="card border-0 shadow-sm p-4 bg-white rounded-3">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Thông tin nhận hàng</h5>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Họ và Tên người nhận</label>
+                            <input type="text" name="fullname" class="form-control py-2" required placeholder="VD: Nguyễn Văn A" value="{{ user_info.get('fullname', '') }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Số điện thoại</label>
+                            <input type="tel" name="phone" class="form-control py-2" required placeholder="VD: 0988xxxxxx" value="{{ user_info.get('phone', '') }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Địa chỉ nhận hàng (Chi tiết)</label>
+                            <textarea name="address" class="form-control" rows="3" required placeholder="Số nhà, Tên đường, Phường/Xã...">{{ user_info.get('address', '') }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Phương thức thanh toán</label>
+                            <select name="payment_method" class="form-select py-2">
+                                <option value="COD">💵 Thanh toán khi nhận hàng (COD)</option>
+                                <option value="Chuyển khoản">🏦 Chuyển khoản ngân hàng</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-danger btn-lg w-100 fw-bold rounded-pill mt-3 py-3" style="background-color: var(--brand-red);">
+                            XÁC NHẬN ĐẶT HÀNG
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-md-5">
+                <div class="card border-0 shadow-sm p-3 bg-white rounded-3 mb-3">
+                    <h6 class="fw-bold mb-2 text-dark">🏷️ Ưu đãi & Mã giảm giá</h6>
+                    <p class="small text-muted mb-2">Thử các mã: <code class="text-danger">SALE10</code> (Giảm 10%) hoặc <code class="text-danger">TECHAI100K</code> (Giảm 100k)</p>
+                    
+                    {% if voucher_info %}
+                        <div class="p-2 bg-success bg-opacity-10 border border-success rounded d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-success">✅ {{ voucher_info['code'] }}</strong>
+                                <small class="d-block text-muted">{{ voucher_info['description'] }}</small>
+                            </div>
+                            <a href="/remove_voucher" class="btn btn-sm btn-outline-danger border-0"> Hủy</a>
+                        </div>
+                    {% else %}
+                        <form action="/apply_voucher" method="POST" class="d-flex gap-2">
+                            <input type="text" name="voucher_code" class="form-control text-uppercase fw-bold" placeholder="Nhập mã voucher" required>
+                            <button type="submit" class="btn btn-outline-danger fw-semibold text-nowrap">Áp dụng</button>
+                        </form>
+                    {% endif %}
+                </div>
+
+                <div class="card border-0 shadow-sm p-4 bg-white rounded-3">
+                    <h5 class="fw-bold border-bottom pb-2">Tóm tắt đơn hàng</h5>
+                   <ul class="list-group list-group-flush mb-3">
+                        {% for item in session['cart'] %}
+                        <li class="list-group-item d-flex justify-content-between lh-sm px-0 py-2">
+                            <div>
+                                <h6 class="my-0 text-dark fs-6">{{ item.get('quantity', 1) }}x {{ item['name'] }}</h6>
+                            </div>
+                            <span class="text-muted">{{ "{:,.0f}".format(item['price'] * item.get('quantity', 1)) }}đ</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="d-flex justify-content-between text-muted mb-2">
+                        <span>Tạm tính:</span>
+                        <span>{{ "{:,.0f}".format(total_price) }} VNĐ</span>
+                    </div>
+
+                    {% if discount > 0 %}
+                    <div class="d-flex justify-content-between text-success fw-semibold mb-2">
+                        <span>Giảm giá (Voucher):</span>
+                        <span>-{{ "{:,.0f}".format(discount) }} VNĐ</span>
+                    </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between fw-bold fs-5 text-danger">
+                        <span>Tổng cộng:</span>
+                        <span>{{ "{:,.0f}".format(final_total) }} VNĐ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

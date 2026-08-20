@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechAI Store - Cửa hàng Công nghệ & Linh kiện AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand-red: #e60023;
+            --brand-red-hover: #c8001e;
+            --bg-light: #f4f6f9;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: #212529;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        /* 1. Header Styling */
+        .techai-header {
+            background: #ffffff;
+            border-bottom: 2px solid #f0f2f5;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+        .search-input {
+            border-radius: 50px 0 0 50px !important;
+            border: 2px solid var(--brand-red) !important;
+            padding-left: 20px;
+        }
+        .search-btn {
+            border-radius: 0 50px 50px 0 !important;
+            background-color: var(--brand-red) !important;
+            color: white !important;
+            border: 2px solid var(--brand-red) !important;
+            padding-right: 25px;
+            padding-left: 20px;
+            font-weight: 600;
+        }
+        .btn-brand-red {
+            background-color: var(--brand-red);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+        .btn-brand-red:hover {
+            background-color: var(--brand-red-hover);
+            color: white;
+        }
+
+        /* 2. Sidebar Menu */
+        .category-sidebar {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .category-sidebar .list-group-item {
+            border: none;
+            border-bottom: 1px solid #f8f9fa;
+            padding: 12px 18px;
+            font-weight: 500;
+            color: #495057;
+            transition: all 0.2s;
+        }
+        .category-sidebar .list-group-item:hover, 
+        .category-sidebar .list-group-item.active {
+            background-color: #fff0f2;
+            color: var(--brand-red);
+            padding-left: 24px;
+            font-weight: 600;
+        }
+
+        /* 3. Hero Banner & User Widget */
+        .hero-banner {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            border-radius: 16px;
+            color: white;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+        .user-widget-badge {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 8px 18px;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            color: #1f2937;
+        }
+
+        /* 4. Product Card Styling */
+        .product-card {
+            background: #ffffff;
+            border: 1px solid #edf2f7;
+            border-radius: 14px;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            overflow: hidden;
+        }
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 25px rgba(230, 0, 35, 0.1) !important;
+            border-color: #fca5a5;
+        }
+        .product-img {
+            height: 190px;
+            object-fit: contain;
+            padding: 15px;
+            background: #ffffff;
+        }
+        .product-price {
+            color: var(--brand-red);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* 5. Flash Sale Banner */
+        .flash-sale-banner {
+            background: linear-gradient(90deg, #dc2626 0%, #991b1b 100%);
+            border-radius: 16px;
+            color: white;
+            padding: 25px 35px;
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25);
+        }
+        .countdown-box {
+            background: #ffffff;
+            color: #dc2626;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* 6. Chatbot Widget */
+        #chat-box { 
+            position: fixed; 
+            bottom: 90px; 
+            right: 20px; 
+            width: 360px; 
+            background: white; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18); 
+            z-index: 1000; 
+            display: none; 
+            flex-direction: column; 
+            overflow: hidden;
+            border: 1px solid #fee2e2;
+        }
+        #chat-header { 
+            background: #111827; 
+            color: white; 
+            padding: 12px 18px; 
+            font-weight: bold; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        #chat-history { 
+            height: 360px; 
+            padding: 15px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            background: #f9fafb;
+        }
+        .msg { padding: 10px 14px; border-radius: 16px; max-width: 85%; font-size: 14px; line-height: 1.4;}
+        .user-msg { background: var(--brand-red); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bot-msg { background: #e5e7eb; color: #1f2937; align-self: flex-start; border-bottom-left-radius: 4px; }
+        
+        #chat-toggle-btn { 
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            background: var(--brand-red); 
+            color: white; 
+            border: none; 
+            border-radius: 50%; 
+            width: 60px; 
+            height: 60px; 
+            font-size: 28px; 
+            box-shadow: 0 6px 16px rgba(230,0,35,0.4); 
+            cursor: pointer; 
+            z-index: 1001; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: 0.3s; 
+        }
+        #chat-toggle-btn:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+    <header class="techai-header sticky-top py-2 mb-4">
+        <div class="container d-flex align-items-center justify-content-between gap-3">
+            <a class="navbar-brand fs-3 fw-bold text-dark d-flex align-items-center" href="/">
+                <span class="me-2 fs-2">🚀</span>TechAI <span style="color: var(--brand-red);" class="ms-1">Store</span>
+            </a>
+
+            <form action="/search" method="GET" class="d-flex flex-grow-1 my-1" style="max-width: 520px;">
+                <div class="input-group">
+                    <input class="form-control search-input py-2" type="search" name="q" placeholder="Bạn muốn tìm phụ kiện gì hôm nay?" required>
+                    <button class="btn search-btn" type="submit">🔍 Tìm kiếm</button>
+                </div>
+            </form>
+
+            <div class="d-flex align-items-center gap-2">
+                <a href="/wishlist" class="btn btn-light rounded-pill px-3 py-2 fw-semibold border d-flex align-items-center gap-1 me-1">
+                    ❤️ <span class="d-none d-md-inline">Yêu thích</span>
+                    {% if user_wishlist %}<span class="badge bg-danger rounded-pill">{{ user_wishlist|length }}</span>{% endif %}
+                </a>
+                <a href="/cart" class="btn btn-outline-danger rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-1">
+                    🛒 <span>Giỏ hàng</span>
+                    {% if session.get('cart') %}
+                        <span class="badge bg-danger rounded-pill ms-1">{{ session['cart']|length }}</span>
+                    {% endif %}
+                </a>
+
+                {% if session.get('username') %}
+                    <div class="dropdown">
+                        <button class="btn btn-light rounded-pill px-3 py-2 fw-semibold border dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            👤 {{ session['username'] }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 py-2">
+                            {% if session.get('role') == 'admin' %}
+                                <li><a class="dropdown-item fw-bold text-warning" href="/admin">⚙️ Trang Admin</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
+                            <li><a class="dropdown-item py-2 fw-semibold" href="/profile">👤 Hồ sơ cá nhân</a></li>
+                            <li><a class="dropdown-item py-2 fw-semibold" href="/profile">📦 Đơn hàng của tôi</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger py-2 fw-semibold" href="/logout">🚪 Đăng xuất</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="/login" class="btn btn-brand-red px-4 py-2">Đăng nhập / Đăng ký</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="category-sidebar">
+                    <div class="p-3 bg-white fw-bold text-uppercase border-bottom d-flex align-items-center gap-2 text-secondary" style="font-size: 0.9rem;">
+                        <span></span> Danh Mục Sản Phẩm
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="/" class="list-group-item list-group-item-action {% if current_category == 'Tất cả sản phẩm' %}active{% endif %}">
+                            🌐 Tất cả sản phẩm
+                        </a>
+                        <a href="/category/Bàn phím" class="list-group-item list-group-item-action">⌨️ Bàn phím</a>
+                        <a href="/category/Chuột" class="list-group-item list-group-item-action">🖱️ Chuột</a>
+                        <a href="/category/Laptop" class="list-group-item list-group-item-action">💻 Laptop</a>
+                        <a href="/category/Linh kiện PC" class="list-group-item list-group-item-action">🖥️ Linh kiện PC</a>
+                        <a href="/category/Màn hình" class="list-group-item list-group-item-action">🖥️ Màn hình</a>
+                        <a href="/category/Pin dự phòng" class="list-group-item list-group-item-action">🔋 Pin dự phòng</a>
+                        <a href="/category/Tai nghe" class="list-group-item list-group-item-action">🎧 Tai nghe</a>
+                    </div>
+                </div>
+
+                <div class="mt-3 p-3 bg-white border rounded-3 shadow-sm text-center">
+                    <small class="text-muted d-block mb-1">TÀI KHOẢN HIỆN TẠI</small>
+                    <div class="user-widget-badge">
+                        <span class="fs-5 me-2">👋</span>
+                        <span class="fw-bold">Xin chào, <span style="color: var(--brand-red);">{{ session.get('username', 'dung') }}</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="hero-banner mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <span class="badge bg-danger mb-2 px-3 py-2 fw-semibold">🔥 SẢN PHẨM HOT NHẤT</span>
+                            <h2 class="fw-bold mb-2">ASUS ROG Strix G16</h2>
+                            <p class="text-gray-300 mb-3 fs-6">Đỉnh cao Laptop Gaming AI Gen 13 • RTX 4060 8GB • Màn hình 16" FHD+ 165Hz mượt mà.</p>
+                            <a href="/product/SP001" class="btn btn-brand-red btn-lg px-4 py-2 fs-6">MUA NGAY</a>
+                        </div>
+                        <div class="col-md-5 text-center mt-3 mt-md-0">
+                            <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500" class="img-fluid rounded-3 shadow" alt="Laptop Gaming" style="max-height: 180px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h4 class="fw-bold m-0 text-dark">{{ current_category }}</h4>
+                    
+                    <form method="GET" action="{{ base_url }}" class="d-flex align-items-center gap-2">
+                        <label class="text-muted small fw-semibold text-nowrap">Sắp xếp theo:</label>
+                        <select name="sort" onchange="this.form.submit()" class="form-select form-select-sm border-danger rounded-pill px-3 shadow-sm w-auto" style="cursor: pointer;">
+                            <option value="">🌟 Mới nhất (Mặc định)</option>
+                            <option value="asc" {% if current_sort == 'asc' %}selected{% endif %}>📈 Giá: Thấp đến Cao</option>
+                            <option value="desc" {% if current_sort == 'desc' %}selected{% endif %}>📉 Giá: Cao xuống Thấp</option>
+                        </select>
+                        <input type="hidden" name="page" value="1"> 
+                    </form>
+                </div>
+
+                <div class="row g-3">
+                    {% for product in products %}
+                    <div class="col-md-4">
+                        <div class="card product-card h-100 shadow-sm position-relative">
+                            <button onclick="toggleWishlist(this)" 
+                                    data-id="{{ product['id_sp'] }}" 
+                                    id="heart-{{ product['id_sp'] }}" 
+                                    class="btn btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-2 border-0" 
+                                    style="z-index: 10;">
+                                {% if product['id_sp'] in user_wishlist %}❤️{% else %}🤍{% endif %}
+                            </button>
+                            
+                            <img src="{{ product['hình_ảnh'] }}" class="card-img-top product-img" alt="{{ product['tên_sản_phẩm'] }}">
+                            </button>
+                            
+                            <div class="card-body d-flex flex-column p-3">
+                                <span class="badge bg-light text-secondary border w-auto align-self-start mb-1" style="font-size: 0.75rem;">{{ product['danh_mục'] }}</span>
+                                <h6 class="card-title fw-bold text-dark text-truncate mb-2" title="{{ product['tên_sản_phẩm'] }}">{{ product['tên_sản_phẩm'] }}</h6>
+                                
+                                <div class="mt-auto">
+                                    <div class="product-price mb-1">{{ "{:,.0f}".format(product['giá']) }} đ</div>
+                                    <div class="small text-danger fw-semibold mb-3" style="font-size: 0.8rem;">🎁 Ưu đãi quà tặng với học sinh/sinh viên</div>
+                                    <a href="/product/{{ product['id_sp'] }}" class="btn btn-brand-red w-100 py-2 fs-6">MUA NGAY</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-light text-center py-5 border">
+                            <h5>Chưa có sản phẩm nào thuộc danh mục này!</h5>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="flash-sale-banner mt-5 d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h3 class="fw-extrabold m-0">⚡ FLASH SALE GIỜ VÀNG</h3>
+                            <span class="badge bg-warning text-dark fw-bold fs-6">GIẢM ĐẾN 50%</span>
+                        </div>
+                        <p class="m-0 text-white-50">Áp dụng cho toàn bộ phụ kiện máy tính & tai nghe cao cấp</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="small fw-semibold text-uppercase">Kết thúc sau:</span>
+                        <div class="d-flex gap-1 align-items-center">
+                            <span class="countdown-box" id="hours">01</span> :
+                            <span class="countdown-box" id="minutes">59</span> :
+                            <span class="countdown-box" id="seconds">59</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if total_pages > 1 %}
+                <nav aria-label="Page navigation" class="mt-4 mb-5">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                            <a class="page-link text-dark" href="{{ base_url }}?page={{ page - 1 }}&sort={{ current_sort }}">⬅️ Trước</a>
+                        </li>
+                        
+                        {% for p in range(1, total_pages + 1) %}
+                        <li class="page-item {% if page == p %}active{% endif %}">
+                            <a class="page-link {% if page == p %}bg-danger border-danger text-white{% else %}text-dark{% endif %}" 
+                               href="{{ base_url }}?page={{ p }}&sort={{ current_sort }}">{{ p }}</a>
+                        </li>
+                        {% endfor %}
+                        
+                        <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                            <a class="page-link text-dark" href="{{ base_url }}?page={{ page + 1 }}&sort={{ current_sort }}">Sau ➡️</a>
+                        </li>
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div><footer class="bg-dark text-light pt-5 pb-3 mt-5" style="border-top: 4px solid var(--brand-red);">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-6">
+                    <a class="navbar-brand fs-3 fw-bold text-white d-flex align-items-center mb-3" href="/" style="text-decoration: none;">
+                        <span class="me-2 fs-2">🚀</span>TechAI <span style="color: var(--brand-red);" class="ms-1">Store</span>
+                    </a>
+                    <p class="text-white-50 small mb-4">Nền tảng thương mại điện tử cung cấp thiết bị công nghệ, linh kiện PC và giải pháp Trí tuệ Nhân tạo thông minh hàng đầu.</p>
+                    <ul class="list-unstyled text-white-50 small">
+                        <li class="mb-2">📍 <strong>Trụ sở:</strong> 123 Quốc lộ 13. Phường Thủ Dầu Một, Thành Phố Hồ Chí Minh</li>
+                        <li class="mb-2">📞 <strong>Tổng đài hỗ trợ:</strong> <strong class="text-white fs-6">1900 12345</strong> (8h00 - 21h00)</li>
+                        <li class="mb-2">📧 <strong>Email:</strong> support@techaistore.vn</li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold mb-3 text-white">Chính Sách Chung</h5>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none footer-link">🛡️ Chính sách bảo hành</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none footer-link">🔄 Chính sách đổi trả 1-1</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none footer-link">🚚 Chính sách giao hàng</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none footer-link">🔒 Bảo mật thông tin cá nhân</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="fw-bold mb-3 text-white">Hỗ Trợ</h5>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none footer-link">📖 Hướng dẫn mua hàng</a></li>
+                        <li class="mb-2"><a href="/profile" class="text-white-50 text-decoration-none footer-link">📦 Tra cứu đơn hàng</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none footer-link">🛠️ Gửi yêu cầu bảo hành</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none footer-link">❓ Câu hỏi thường gặp (FAQ)</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold mb-3 text-white">Kết Nối Với Chúng Tôi</h5>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="#" class="text-light fs-4 text-decoration-none footer-icon">📞</a>
+                        <a href="https://www.facebook.com/share/1cr4mc9hN8/?mibextid=wwXIfr" class="text-light fs-4 text-decoration-none footer-icon">📸</a>
+                        <a href="#" class="text-light fs-4 text-decoration-none footer-icon">📺</a>
+                        <a href="#" class="text-light fs-4 text-decoration-none footer-icon">🎬</a>
+                    </div>
+                    <h5 class="fw-bold mb-3 text-white">Thanh Toán An Toàn</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-light text-dark border py-2">💳 VISA / MasterCard</span>
+                        <span class="badge bg-light text-dark border py-2">💵 Tiền mặt (COD)</span>
+                        <span class="badge bg-light text-dark border py-2">🏦 Chuyển khoản</span>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="border-secondary mt-4 mb-3">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start text-white-50 small">
+                    &copy; 2026 TechAI Store. Bản quyền thuộc về sinh viên thực hiện Đồ án.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <span class="badge bg-danger rounded-pill px-3 py-2">Chưa đăng ký Bộ Công Thương</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .footer-link { transition: all 0.3s ease; display: inline-block; }
+        .footer-link:hover { color: var(--brand-red) !important; transform: translateX(5px); }
+        .footer-icon { transition: transform 0.3s ease; display: inline-block; }
+        .footer-icon:hover { transform: translateY(-3px) scale(1.1); }
+    </style>
+
+    <button id="chat-toggle-btn" onclick="toggleChat()">💬</button>
+
+    <div id="chat-box">
+        <div id="chat-header">
+            <span>🤖 Chatbot AI Tư Vấn</span>
+            <span style="cursor: pointer;" onclick="toggleChat()" title="Thu nhỏ">➖</span>
+        </div>
+        <div id="chat-history">
+            <div class="msg bot-msg">Dạ em chào anh/chị! Anh/chị cần tư vấn build PC hay mua linh kiện gì ạ?</div>
+            {% if chat_history %}
+                {% for chat in chat_history %}
+                    {% if chat.sender == 'user' %}
+                        <div class="msg user-msg">{{ chat.msg }}</div>
+                    {% else %}
+                        <div class="msg bot-msg">{{ chat.msg | safe }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="input-group border-top p-2 bg-white">
+            <input type="text" id="chat-input" class="form-control border-0" placeholder="Nhập câu hỏi...">
+            <button class="btn btn-danger rounded-pill px-3" onclick="sendMessage()">Gửi</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle Chatbot Window
+        function toggleChat() {
+            var chatBox = document.getElementById("chat-box");
+            var toggleBtn = document.getElementById("chat-toggle-btn");
+            if (chatBox.style.display === "none" || chatBox.style.display === "") {
+                chatBox.style.display = "flex";
+                toggleBtn.style.display = "none";
+                var chatHistory = document.getElementById("chat-history");
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            } else {
+                chatBox.style.display = "none";
+                toggleBtn.style.display = "flex";
+            }
+        }
+
+        // Send Chatbot Message
+        function sendMessage() {
+            var input = document.getElementById("chat-input");
+            var message = input.value.trim();
+            if (message === "") return;
+
+            var chatHistory = document.getElementById("chat-history");
+            chatHistory.innerHTML += `<div class="msg user-msg">${message}</div>`;
+            input.value = "";
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            let loadingId = "loading-" + Date.now(); 
+            chatHistory.innerHTML += `<div id="${loadingId}" class="msg bot-msg text-muted">⏳ Đang tìm thông số...</div>`;
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById(loadingId).remove();
+                let replyText = data.reply.replace(/\n/g, "<br>");
+                replyText = replyText.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+                chatHistory.innerHTML += `<div class="msg bot-msg">${replyText}</div>`;
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }).catch(() => {
+                document.getElementById(loadingId).remove();
+            });
+        }
+
+        document.getElementById("chat-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") { event.preventDefault(); sendMessage(); }
+        });
+
+        // Flash Sale Countdown Logic
+        setInterval(function() {
+            let s = document.getElementById('seconds');
+            let m = document.getElementById('minutes');
+            let h = document.getElementById('hours');
+            let sec = parseInt(s.innerText);
+            if (sec > 0) {
+                s.innerText = (sec - 1 < 10 ? '0' : '') + (sec - 1);
+            } else {
+                s.innerText = '59';
+                let min = parseInt(m.innerText);
+                if (min > 0) {
+                    m.innerText = (min - 1 < 10 ? '0' : '') + (min - 1);
+                }
+            }
+        }, 1000);
+        function toggleWishlist(btnElement) {
+            let id_sp = btnElement.getAttribute('data-id');
+            
+            fetch('/toggle_wishlist/' + id_sp, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'error') {
+                    alert(data.message);
+                    window.location.href = '/login';
+                } else if (data.status === 'success') {
+                    if (data.action === 'added') {
+                        btnElement.innerText = '❤️';
+                    } else {
+                        btnElement.innerText = '🤍';
+                    }
+                    location.reload(); 
+                }
+            });
+        }
+    </script>
+    
+    
+</body>
+</html>

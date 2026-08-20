@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>TechAI Admin - Quản Lý Tài Khoản</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --brand-red: #e60023; --bg-light: #f4f6f9; }
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', system-ui, sans-serif; }
+        .admin-sidebar { background: #ffffff; border-right: 1px solid #e5e7eb; border-radius: 12px; min-height: calc(100vh - 70px); }
+        .admin-sidebar .nav-link { color: #4b5563; font-weight: 600; padding: 14px 20px; border-radius: 8px; margin-bottom: 4px; }
+        .admin-sidebar .nav-link.active { background-color: #fff0f2; color: var(--brand-red); }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white border-bottom py-2 shadow-sm sticky-top">
+        <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+            <a href="/admin" class="navbar-brand fs-4 fw-bold text-dark">🚀 TechAI <span style="color: var(--brand-red);">Admin Panel</span></a>
+            <a href="/" class="btn btn-light border btn-sm rounded-pill px-3">🏠 Xem Website</a>
+        </div>
+    </header>
+
+    <div class="container-fluid px-4 my-4">
+        <div class="row g-4">
+            <div class="col-md-3 col-lg-2">
+                <div class="admin-sidebar p-3">
+                    <small class="text-muted fw-bold d-block mb-3 px-2">QUẢN TRỊ HỆ THỐNG</small>
+                    <div class="nav flex-column nav-pills">
+                        <a href="/admin" class="nav-link">📊 Tổng Quan & Thống Kê</a>
+                        <a href="/admin/products" class="nav-link">📦 Quản Lý Kho Sản Phẩm</a>
+                        <a href="/admin/orders" class="nav-link">📋 Quản Lý Đơn Hàng</a>
+                        <a href="/admin/brands" class="nav-link">🏷️ Quản Lý Thương Hiệu</a>
+                        <a href="/admin/users" class="nav-link active">👥 Quản Lý Tài Khoản</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9 col-lg-10">
+                <h4 class="fw-bold mb-4">👥 Danh Sách Tài Khoản Người Dùng</h4>
+
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">STT</th>
+                                    <th>Tên Đăng Nhập</th>
+                                    <th>Vai Trò</th>
+                                    <th class="text-end pe-3">Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in users %}
+                                <tr>
+                                    <td class="ps-3 text-muted">{{ loop.index }}</td>
+                                    <td class="fw-bold">👤 {{ u['username'] }}</td>
+                                    <td>
+                                        {% if u['role'] == 'admin' %}
+                                            <span class="badge bg-danger">Quản trị viên (Admin)</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Khách hàng</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        {% if u['username'] != session['username'] %}
+                                        <a href="/admin/users/delete/{{ u['username'] }}" class="btn btn-outline-danger btn-sm rounded-pill" onclick="return confirm('Bạn có chắc muốn xóa tài khoản này?')">🗑️ Xóa</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

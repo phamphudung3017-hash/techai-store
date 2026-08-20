@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Yêu Thích - TechAI Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --brand-red: #e60023; --bg-light: #f4f6f9; }
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', system-ui, sans-serif; }
+        .product-card { transition: transform 0.2s; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white border-bottom py-2 shadow-sm mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand fs-3 fw-bold text-dark d-flex align-items-center" href="/">
+                <span class="me-2 fs-2">🚀</span>TechAI <span style="color: var(--brand-red);" class="ms-1">Store</span>
+            </a>
+            <a href="/" class="btn btn-outline-secondary rounded-pill btn-sm px-3 fw-semibold">🏠 Quay lại Trang chủ</a>
+        </div>
+    </header>
+
+    <div class="container mb-5">
+        <div class="d-flex align-items-center mb-4 gap-2">
+            <h3 class="fw-bold m-0 text-dark">❤️ Danh Sách Yêu Thích Của Bạn</h3>
+            <span class="badge bg-danger rounded-pill ms-2 fs-6">{{ products|length }} sản phẩm</span>
+        </div>
+
+        {% if products|length == 0 %}
+            <div class="alert alert-light text-center py-5 border rounded-3 shadow-sm">
+                <div class="fs-1 mb-2">🤍</div>
+                <h5>Danh sách yêu thích đang trống!</h5>
+                <p class="text-muted small">Hãy dạo quanh cửa hàng và thả tim những sản phẩm bạn thích nhé.</p>
+                <a href="/" class="btn btn-danger rounded-pill px-4 fw-semibold mt-2" style="background-color: var(--brand-red);">Mua sắm ngay</a>
+            </div>
+        {% else %}
+            <div class="row g-3">
+                {% for product in products %}
+                <div class="col-md-3 col-sm-6">
+                    <div class="card product-card h-100 shadow-sm border-0 rounded-3 position-relative">
+                        <form action="/toggle_wishlist/{{ product['id_sp'] }}" method="POST" class="position-absolute top-0 end-0 m-2" style="z-index: 10;">
+                            <button type="submit" class="btn btn-light rounded-circle shadow-sm border text-danger" title="Bỏ yêu thích" onclick="setTimeout(()=>location.reload(), 100)">
+                                ✖
+                            </button>
+                        </form>
+
+                        <img src="{{ product['hình_ảnh'] }}" class="card-img-top p-3" alt="{{ product['tên_sản_phẩm'] }}" style="height: 180px; object-fit: contain;">
+                        <div class="card-body d-flex flex-column bg-white">
+                            <span class="badge bg-light text-secondary border w-auto align-self-start mb-1" style="font-size: 0.75rem;">{{ product['danh_mục'] }}</span>
+                            <h6 class="card-title fw-bold text-dark text-truncate mb-2" title="{{ product['tên_sản_phẩm'] }}">{{ product['tên_sản_phẩm'] }}</h6>
+                            <div class="mt-auto">
+                                <div class="text-danger fw-bold fs-5 mb-2">{{ "{:,.0f}".format(product['giá']) }} đ</div>
+                                <a href="/product/{{ product['id_sp'] }}" class="btn btn-danger w-100 rounded-pill fw-semibold" style="background-color: var(--brand-red);">MUA NGAY</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

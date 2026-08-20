@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>TechAI Admin - {{ action }} Sản Phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --brand-red: #e60023; --brand-red-hover: #c8001e; --bg-light: #f4f6f9; }
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', system-ui, sans-serif; }
+        .admin-sidebar { background: #ffffff; border-right: 1px solid #e5e7eb; border-radius: 12px; min-height: calc(100vh - 70px); }
+        .admin-sidebar .nav-link { color: #4b5563; font-weight: 600; padding: 14px 20px; border-radius: 8px; margin-bottom: 4px; }
+        .admin-sidebar .nav-link.active { background-color: #fff0f2; color: var(--brand-red); }
+        .btn-brand-red { background-color: var(--brand-red); color: white; border: none; }
+        .btn-brand-red:hover { background-color: var(--brand-red-hover); color: white; }
+    </style>
+</head>
+<body>
+    <header class="bg-white border-bottom py-2 shadow-sm sticky-top">
+        <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+            <a href="/admin" class="navbar-brand fs-4 fw-bold text-dark">🚀 TechAI <span style="color: var(--brand-red);">Admin Panel</span></a>
+            <a href="/" class="btn btn-light border btn-sm rounded-pill px-3">🏠 Xem Website</a>
+        </div>
+    </header>
+
+    <div class="container-fluid px-4 my-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="row g-4">
+            <div class="col-md-3 col-lg-2">
+                <div class="admin-sidebar p-3">
+                    <small class="text-muted fw-bold d-block mb-3 px-2">QUẢN TRỊ HỆ THỐNG</small>
+                    <div class="nav flex-column nav-pills">
+                        <a href="/admin" class="nav-link">📊 Tổng Quan & Thống Kê</a>
+                        <a href="/admin/products" class="nav-link active">📦 Quản Lý Kho Sản Phẩm</a>
+                        <a href="/admin/orders" class="nav-link">📋 Quản Lý Đơn Hàng</a>
+                        <a href="/admin/brands" class="nav-link">🏷️ Quản Lý Thương Hiệu</a>
+                        <a href="/admin/users" class="nav-link">👥 Quản Lý Tài Khoản</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9 col-lg-10">
+                <div class="d-flex align-items-center mb-4 gap-3">
+                    <a href="/admin/products" class="btn btn-outline-secondary rounded-pill fw-bold">⬅️ Quay lại</a>
+                    <h4 class="fw-bold m-0 text-dark">{{ action }} Thông Tin Sản Phẩm</h4>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-4">
+                        <form method="POST" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Mã Sản Phẩm (ID)</label>
+                                        <input type="text" name="id_sp" class="form-control bg-light" value="{{ product['id_sp'] if product else '' }}" required {% if product %}readonly{% endif %} placeholder="VD: SP001">
+                                        {% if product %}<small class="text-danger">Không thể sửa mã ID sau khi tạo.</small>{% endif %}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Tên Sản Phẩm</label>
+                                        <input type="text" name="tên_sản_phẩm" class="form-control" value="{{ product['tên_sản_phẩm'] if product else '' }}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Danh Mục</label>
+                                        <select name="danh_mục" class="form-select" required>
+                                            <option value="">-- Chọn danh mục --</option>
+                                            <option value="Laptop" {% if product and product['danh_mục'] == 'Laptop' %}selected{% endif %}>💻 Laptop</option>
+                                            <option value="Bàn phím" {% if product and product['danh_mục'] == 'Bàn phím' %}selected{% endif %}>⌨️ Bàn phím</option>
+                                            <option value="Chuột" {% if product and product['danh_mục'] == 'Chuột' %}selected{% endif %}>🖱️ Chuột</option>
+                                            <option value="Màn hình" {% if product and product['danh_mục'] == 'Màn hình' %}selected{% endif %}>🖥️ Màn hình</option>
+                                            <option value="Tai nghe" {% if product and product['danh_mục'] == 'Tai nghe' %}selected{% endif %}>🎧 Tai nghe</option>
+                                            <option value="Linh kiện PC" {% if product and product['danh_mục'] == 'Linh kiện PC' %}selected{% endif %}>⚙️ Linh kiện PC</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-primary">Thương Hiệu</label>
+                                        <select name="thương_hiệu" class="form-select border-primary" required>
+                                            <option value="">-- Chọn thương hiệu --</option>
+                                            {% for b in brands %}
+                                                <option value="{{ b['name'] }}" {% if product and product['thương_hiệu'] == b['name'] %}selected{% endif %}>
+                                                    🏷️ {{ b['name'] }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="text-muted">Lấy từ danh sách Quản lý Thương hiệu.</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Giá Bán (VNĐ)</label>
+                                        <input type="number" name="giá" class="form-control" value="{{ product['giá'] if product else '' }}" required placeholder="VD: 25000000">
+                                    </div>
+
+                                    <div class="mb-3 p-3 bg-light rounded border">
+                                        <label class="form-label fw-bold text-danger">Hình Ảnh Sản Phẩm</label>
+                                        
+                                        {% if product and product['hình_ảnh'] %}
+                                        <div class="mb-2">
+                                            <img src="{{ product['hình_ảnh'] }}" alt="Current Image" class="img-thumbnail" style="max-height: 120px;">
+                                            <p class="small text-muted mt-1">Ảnh hiện tại</p>
+                                        </div>
+                                        {% endif %}
+
+                                        <p class="mb-1 fw-semibold small">Cách 1: Tải ảnh từ máy tính lên</p>
+                                        <input type="file" name="hinh_anh_file" class="form-control mb-3" accept="image/*">
+                                        
+                                        <p class="mb-1 fw-semibold small">Cách 2: Dán đường link (URL) ảnh trên mạng</p>
+                                        <input type="text" name="hình_ảnh" class="form-control" value="{{ product['hình_ảnh'] if product else '' }}" placeholder="https://...">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Mô tả ngắn gọn</label>
+                                    <textarea name="mô_tả" class="form-control" rows="4" required>{{ product['mô_tả'] if product else '' }}</textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Thông số kỹ thuật (Dành cho AI đọc)</label>
+                                    <textarea name="thông_số" class="form-control bg-light" rows="4" required placeholder="CPU: Intel Core i7, RAM: 16GB, Ổ cứng: 512GB SSD...">{{ product['thông_số'] if product else '' }}</textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-brand-red btn-lg w-100 fw-bold mt-3">💾 LƯU SẢN PHẨM & ĐỒNG BỘ AI</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Thương Hiệu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/admin">🚀 TechAI Admin Panel</a>
+            <div>
+                <a href="/admin" class="btn btn-outline-light btn-sm me-2"> Quản lý Sản phẩm</a>
+                <a href="/admin/orders" class="btn btn-outline-light btn-sm me-2"> Quản lý Đơn hàng</a>
+                <a href="/" class="btn btn-outline-light btn-sm">Trang chủ Web</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 800px;">
+        <h2 class="mb-4"> Quản Lý Danh Sách Thương Hiệu</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="row g-4">
+            <div class="col-md-5">
+                <div class="card shadow-sm p-3">
+                    <h5 class="card-title text-primary mb-3"> Thêm Thương Hiệu Mới</h5>
+                    <form action="/admin/brands/add" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên Thương Hiệu</label>
+                            <input type="text" name="name" class="form-control" placeholder="VD: Apple, Dell, Razer..." required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-bold">Lưu Thương Hiệu</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white fw-bold">Danh Sách Thương Hiệu Hiện Có</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-3">STT</th>
+                                    <th>Tên Thương Hiệu</th>
+                                    <th class="text-end pe-3">Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for b in brands %}
+                                <tr>
+                                    <td class="ps-3 text-muted">{{ loop.index }}</td>
+                                    <td class="fw-bold text-dark"> {{ b['name'] }}</td>
+                                    <td class="text-end pe-3">
+                                        <a href="/admin/brands/delete/{{ b['_id'] }}" 
+                                           class="btn btn-outline-danger btn-sm" 
+                                           onclick="return confirm('Bạn có chắc chắn muốn xóa thương hiệu này?')"> Xóa</a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-3">Chưa có thương hiệu nào.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
